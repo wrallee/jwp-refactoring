@@ -20,7 +20,6 @@ import kitchenpos.generic.exception.IllegalOperationException;
 import kitchenpos.generic.exception.NotEnoughTablesException;
 import kitchenpos.generic.exception.OrderNotCompletedException;
 import kitchenpos.generic.exception.TableGroupNotFoundException;
-import kitchenpos.order.domain.OrderRepository;
 import kitchenpos.tablegroup.domain.TableGroup;
 import kitchenpos.tablegroup.domain.TableGroupRepository;
 
@@ -32,7 +31,7 @@ class TableGroupValidatorImplTest {
     TableGroupValidatorImpl validator;
 
     @Mock
-    OrderRepository orderRepository;
+    OrderStatusCheckService orderStatusCheckService;
     @Mock
     OrderTableRepository orderTableRepository;
     @Mock
@@ -89,7 +88,7 @@ class TableGroupValidatorImplTest {
         // given
         TableGroup dummy = new TableGroup();
         when(tableGroupRepository.existsById(any())).thenReturn(true);
-        when(orderRepository.existsAllByOrderTableIdInAndOrderStatusIn(anyList(), anyList())).thenReturn(true);
+        when(orderStatusCheckService.existsOrdersInProgress(anyList())).thenReturn(true);
 
         // then
         assertThatThrownBy(() -> validator.validateUngrouping(dummy))

@@ -1,8 +1,5 @@
 package kitchenpos.ordertable.domain;
 
-import static java.util.Arrays.*;
-import static kitchenpos.order.domain.OrderStatus.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +10,6 @@ import kitchenpos.generic.exception.NotEnoughTablesException;
 import kitchenpos.generic.exception.OrderNotCompletedException;
 import kitchenpos.generic.exception.OrderTableNotFoundException;
 import kitchenpos.generic.exception.TableGroupNotFoundException;
-import kitchenpos.order.domain.OrderRepository;
 import kitchenpos.tablegroup.domain.TableGroup;
 import kitchenpos.tablegroup.domain.TableGroupRepository;
 import kitchenpos.tablegroup.domain.TableGroupValidator;
@@ -23,13 +19,13 @@ public class TableGroupValidatorImpl implements TableGroupValidator {
 
     private static final int MINIMUM_GROUPING_COUNT = 2;
 
-    private final OrderRepository orderRepository;
+    private final OrderStatusCheckService orderStatusCheckService;
     private final OrderTableRepository orderTableRepository;
     private final TableGroupRepository tableGroupRepository;
 
-    public TableGroupValidatorImpl(OrderRepository orderRepository,
+    public TableGroupValidatorImpl(OrderStatusCheckService orderStatusCheckService,
             OrderTableRepository orderTableRepository, TableGroupRepository tableGroupRepository) {
-        this.orderRepository = orderRepository;
+        this.orderStatusCheckService = orderStatusCheckService;
         this.orderTableRepository = orderTableRepository;
         this.tableGroupRepository = tableGroupRepository;
     }
@@ -52,7 +48,7 @@ public class TableGroupValidatorImpl implements TableGroupValidator {
     private boolean includeOrderInProgress(TableGroup tableGroup) {
         List<Long> orderTableIds = orderTableRepository.findAllByTableGroupId(tableGroup.getId())
             .stream().map(OrderTable::getId).collect(Collectors.toList());
-        return orderRepository.existsAllByOrderTableIdInAndOrderStatusIn(orderTableIds, asList(COOKING, MEAL));
+        return orderStatusCheckService.existsOrdersInProgress(orderTableIds);
     }
 
     @Override

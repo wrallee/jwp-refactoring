@@ -1,5 +1,7 @@
 package kitchenpos.ordertable.domain;
 
+import static java.util.Collections.*;
+
 import org.springframework.stereotype.Component;
 
 import kitchenpos.generic.exception.IllegalOperationException;
@@ -33,7 +35,7 @@ public class OrderTableValidator {
     }
 
     private boolean includeOrderInProgress(OrderTable orderTable) {
-        return orderStatusCheckService.existsOrdersInProgress(orderTable.getId());
+        return orderStatusCheckService.existsOrdersInProgress(singletonList(orderTable.getId()));
     }
 
     public void validateChangeNumberOfGuests(OrderTable orderTable) {

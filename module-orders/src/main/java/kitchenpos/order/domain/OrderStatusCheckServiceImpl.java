@@ -1,6 +1,6 @@
 package kitchenpos.order.domain;
 
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -15,8 +15,8 @@ public class OrderStatusCheckServiceImpl implements OrderStatusCheckService {
     }
 
     @Override
-    public boolean existsOrdersInProgress(Long orderTableId) {
+    public boolean existsOrdersInProgress(List<Long> orderTableIds) {
         return orderRepository.existsAllByOrderTableIdInAndOrderStatusIn(
-            Collections.singletonList(orderTableId), OrderStatus.getInProgressStatuses());
+            orderTableIds, OrderStatus.getInProgressStatuses());
     }
 }
